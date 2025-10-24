@@ -39,6 +39,7 @@ motd = False
 ip_specified = False
 IP = ''
 IP_NAME =''
+
 def ip_to_hostname(ip):
     if ip == "10.0.15.61":
         ip_name = "IPA-Router1"
@@ -64,10 +65,7 @@ while True:
     getHTTPHeader = {"Authorization": f"Bearer {ACCESS_TOKEN}"}
 
 # 4. Provide the URL to the Webex Teams messages API, and extract location from the received message.
-    
-    # Send a GET request to the Webex Teams messages API.
-    # - Use the GetParameters to get only the latest message.
-    # - Store the message in the "r" variable.
+
     r = requests.get(
         WEBEX_MESSAGES_API,
         params=getParameters,
@@ -95,7 +93,6 @@ while True:
         continue
     message_command = message.split()
     # check if the text of the message starts with the magic character "/" followed by your studentID and a space and followed by a command name
-    #  e.g.  "/66070123 create"
     if message.startswith("/66070138"):
         print("Received message: " + message)
         # extract the command
@@ -152,20 +149,7 @@ while True:
             print("Error: No IP specified")
             responseMessage = "Error: No IP specified"
         
-        
-# 6. Complete the code to post the message to the Webex Teams room.
-
-        # The Webex Teams POST JSON data for command showrun
-        # - "roomId" is is ID of the selected room
-        # - "text": is always "show running config"
-        # - "files": is a tuple of filename, fileobject, and filetype.
-
-        # the Webex Teams HTTP headers, including the Authoriztion and Content-Type
-        
-        # Prepare postData and HTTPHeaders for command showrun
-        # Need to attach file if responseMessage is 'ok'; 
-        # Read Send a Message with Attachments Local File Attachments
-        # https://developer.webex.com/docs/basics for more detail
+#post the message to the Webex Teams room.
         print("res: ",responseMessage)
         if command == "showrun" and responseMessage == 'ok':
             print(IP)
