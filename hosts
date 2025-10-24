@@ -1,6 +1,6 @@
 [rtr]
-R1-Exam ansible_host=10.0.15.61 ansible_user=admin ansible_password=cisco ansible_network_os=ios
-R2-Exam ansible_host=10.0.15.62 ansible_user=admin ansible_password=cisco ansible_network_os=ios
-R3-Exam ansible_host=10.0.15.63 ansible_user=admin ansible_password=cisco ansible_network_os=ios
-R4-Exam ansible_host=10.0.15.64 ansible_user=admin ansible_password=cisco ansible_network_os=ios
-R5-Exam ansible_host=10.0.15.65 ansible_user=admin ansible_password=cisco ansible_network_os=ios
+IPA-Router1 ansible_host=10.0.15.61 ansible_user=admin ansible_password=cisco ansible_network_os=ios
+IPA-Router2 ansible_host=10.0.15.62 ansible_user=admin ansible_password=cisco ansible_network_os=ios
+IPA-Router3 ansible_host=10.0.15.63 ansible_user=admin ansible_password=cisco ansible_network_os=ios
+IPA-Router4 ansible_host=10.0.15.64 ansible_user=admin ansible_password=cisco ansible_network_os=ios
+IPA-Router5 ansible_host=10.0.15.65 ansible_user=admin ansible_password=cisco ansible_network_os=ios

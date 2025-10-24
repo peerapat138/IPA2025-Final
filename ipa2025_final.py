@@ -36,6 +36,21 @@ ROOM_ID_GET_MESSESGE = os.environ.get("ROOM_ID")
 restconf =False
 netconf = False
 motd = False
+ip_specified = False
+IP = ''
+IP_NAME =''
+def ip_to_hostname(ip):
+    if ip == "10.0.15.61":
+        ip_name = "IPA-Router1"
+    elif ip == "10.0.15.62":
+        ip_name = "IPA-Router2"
+    elif ip == "10.0.15.63":
+        ip_name = "IPA-Router3"
+    elif ip == "10.0.15.64":
+        ip_name = "IPA-Router4"
+    elif ip == "10.0.15.65":
+        ip_name = "IPA-Router5"
+    return ip_name
 while True:
     # always add 1 second of delay to the loop to not go over a rate limit of API calls
     time.sleep(1)
@@ -79,16 +94,17 @@ while True:
     if not message.startswith("/66070138"):
         continue
     message_command = message.split()
-    ip_specified = False
     # check if the text of the message starts with the magic character "/" followed by your studentID and a space and followed by a command name
     #  e.g.  "/66070123 create"
     if message.startswith("/66070138"):
         print("Received message: " + message)
         # extract the command
         if len(message_command) == 3:
-            command = message_command[2]
+            print(len(message_command))
             ip = message_command[1]
             ip_specified = True
+            command = message_command[2]
+            IP = ip
             print(ip)
             print(command)
         else:
@@ -103,25 +119,10 @@ while True:
                 restconf =False
                 netconf = True
                 responseMessage ="Ok: Netconf"
-# 5. Complete the logic for each command
-        elif command in ["gigabit_status", "showrun"]:
-            if command == "gigabit_status":
-                responseMessage =netmiko_final.gigabit_status(ip)
-            elif command == "showrun":
-                if ip == "10.0.15.61":
-                    ip = "R1-Exam"
-                elif ip == "10.0.15.62":
-                    ip = "R2-Exam"
-                elif ip == "10.0.15.63":
-                    ip = "R3-Exam"
-                elif ip == "10.0.15.64":
-                    ip = "R4-Exam"
-                elif ip == "10.0.15.65":
-                    ip = "R5-Exam"
-                responseMessage = ansible_final.showrun(ip)
         elif len(message_command) >= 3 and message_command[2] == "motd":
             ip = message_command[1]
             motd = True
+            print("ip : ",ip, "motd",motd)
             if len(message_command) > 3:
                 # มีข้อความ motd ตามหลัง
                 motd_text = " ".join(message_command[3:])
@@ -129,55 +130,27 @@ while True:
             else:
                 # ไม่มีข้อความ -> แสดงค่า MOTD
                 responseMessage = netmiko_motd_final.get_motd(ip)
-        elif restconf == True and ip_specified == True:
-            if command == "create":
-                responseMessage = restconf_final.create(ip)
-            elif command == "delete":
-                responseMessage = restconf_final.delete(ip)
-            elif command == "enable":
-                responseMessage = restconf_final.enable(ip)
-            elif command == "disable":
-                responseMessage = restconf_final.disable(ip)
-            elif command == "status":
-                responseMessage =restconf_final.status(ip)
-            elif command == "gigabit_status":
-                responseMessage =netmiko_final.gigabit_status(ip)
+        elif ip_specified:
+            if command == "gigabit_status":
+                responseMessage = netmiko_final.gigabit_status(ip)
             elif command == "showrun":
-                if ip == "10.0.15.61":
-                    ip = "R1-Exam"
-                elif ip == "10.0.15.62":
-                    ip = "R2-Exam"
-                elif ip == "10.0.15.63":
-                    ip = "R3-Exam"
-                elif ip == "10.0.15.64":
-                    ip = "R4-Exam"
-                elif ip == "10.0.15.65":
-                    ip = "R5-Exam"
-                responseMessage = ansible_final.showrun(ip)
+                responseMessage = ansible_final.showrun(ip_to_hostname(ip))
+            elif (restconf == False and netconf == False):
+                print("Error: No method specified")
+                responseMessage = "Error: No method specified"
+            elif command in ["create", "delete", "enable", "disable", "status"]:
+                if restconf:
+                    func = getattr(restconf_final, command)
+                    responseMessage = func(ip)
+                elif netconf:
+                    if command in ["create", "delete", "enable", "disable", "status"]:
+                        func = getattr(netconf_final, command)
+                        responseMessage = func(ip)
             else:
-                responseMessage = "Error: No command or unknown command"
-        elif netconf == True and ip_specified == True:
-            if command == "create":
-                responseMessage = netconf_final.create(ip)
-            elif command == "delete":
-                responseMessage = netconf_final.delete(ip)
-            elif command == "enable":
-                responseMessage = netconf_final.enable(ip)
-            elif command == "disable":
-                responseMessage = netconf_final.disable(ip)
-            elif command == "status":
-                responseMessage =netconf_final.status(ip)
-            else:
-                responseMessage = "Error: No command or unknown command"
-        elif (ip_specified == False and motd == True):
-            print("Error: No IP specified MOTD")
-            responseMessage = "Error: No IP specified"
-        elif (ip_specified == False and (restconf == True or netconf == True)):
+                 responseMessage = "Error: No command or unknown command"
+        else:
             print("Error: No IP specified")
             responseMessage = "Error: No IP specified"
-        elif (restconf == False and netconf == False):
-            print("Error: No method specified")
-            responseMessage = "Error: No method specified"
         
         
 # 6. Complete the code to post the message to the Webex Teams room.
@@ -195,12 +168,14 @@ while True:
         # https://developer.webex.com/docs/basics for more detail
         print("res: ",responseMessage)
         if command == "showrun" and responseMessage == 'ok':
-            filename = f"show_run_66070138_{ip}.txt"
+            print(IP)
+            filename = f"show_run_66070138_{ip_to_hostname(IP)}.txt"
+            print(filename)
             fileobject = open(filename, 'rb')
             filetype = "text/plain"
             postData = {
                 "roomId": ROOM_ID_GET_MESSESGE,
-                "text": "show running config",
+                "text": f"show running config {IP}",
                 "files": (filename, fileobject, filetype),
             }
             postData = MultipartEncoder(postData)
