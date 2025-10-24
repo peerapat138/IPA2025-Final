@@ -35,7 +35,7 @@ ROOM_ID_GET_MESSESGE = os.environ.get("ROOM_ID")
 
 restconf =False
 netconf = False
-
+motd = False
 while True:
     # always add 1 second of delay to the loop to not go over a rate limit of API calls
     time.sleep(1)
@@ -121,6 +121,7 @@ while True:
                 responseMessage = ansible_final.showrun(ip)
         elif len(message_command) >= 3 and message_command[2] == "motd":
             ip = message_command[1]
+            motd = True
             if len(message_command) > 3:
                 # มีข้อความ motd ตามหลัง
                 motd_text = " ".join(message_command[3:])
@@ -168,13 +169,15 @@ while True:
                 responseMessage =netconf_final.status(ip)
             else:
                 responseMessage = "Error: No command or unknown command"
+        elif (ip_specified == False and motd == True):
+            print("Error: No IP specified MOTD")
+            responseMessage = "Error: No IP specified"
+        elif (ip_specified == False and (restconf == True or netconf == True)):
+            print("Error: No IP specified")
+            responseMessage = "Error: No IP specified"
         elif (restconf == False and netconf == False):
             print("Error: No method specified")
             responseMessage = "Error: No method specified"
-        
-        elif ip_specified == False and (restconf == True or netconf == True):
-            print("Error: No IP specified")
-            responseMessage = "Error: No IP specified"
         
         
 # 6. Complete the code to post the message to the Webex Teams room.
