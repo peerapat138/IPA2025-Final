@@ -17,6 +17,8 @@ import restconf_final
 import netconf_final
 import netmiko_final
 import ansible_final
+import ansible_motd_final
+import netmiko_motd_final
 
 load_dotenv()
 #######################################################################################
@@ -117,6 +119,15 @@ while True:
                 elif ip == "10.0.15.65":
                     ip = "R5-Exam"
                 responseMessage = ansible_final.showrun(ip)
+        elif len(message_command) >= 3 and message_command[2] == "motd":
+            ip = message_command[1]
+            if len(message_command) > 3:
+                # มีข้อความ motd ตามหลัง
+                motd_text = " ".join(message_command[3:])
+                responseMessage = ansible_motd_final.set_motd(ip, motd_text)
+            else:
+                # ไม่มีข้อความ -> แสดงค่า MOTD
+                responseMessage = netmiko_motd_final.get_motd(ip)
         elif restconf == True and ip_specified == True:
             if command == "create":
                 responseMessage = restconf_final.create(ip)
