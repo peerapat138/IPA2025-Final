@@ -17,7 +17,7 @@ def create(ip):
     netconf_config = """
     <config>
         <interfaces xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
-            <interface>
+            <interface operation="create">
                 <name>Loopback66070138</name>
                 <description>Loopback 66070138 created by NETCONF</description>
                 <type xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">
