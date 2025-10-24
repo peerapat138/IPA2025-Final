@@ -1,0 +1,15 @@
+- name: Get running config
+  hosts: all
+  gather_facts: no
+  connection: network_cli
+  tasks:
+    - name: Save running config
+      cisco.ios.ios_command:
+        commands:
+          - show running-config
+      register: result
+
+    - name: Write output to file
+      copy:
+        content: "{{ result.stdout[0] }}"
+        dest: "show_run_66070138_{{ inventory_hostname }}.txt"
