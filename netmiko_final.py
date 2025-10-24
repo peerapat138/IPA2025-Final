@@ -1,21 +1,18 @@
 from netmiko import ConnectHandler
 from pprint import pprint
 
-
-device_ip = "10.0.15.63"
 username = "admin"
 password = "cisco"
 
-device_params = {
+
+def gigabit_status(ip):
+    ans = ""
+    device_params = {
     "device_type": "cisco_ios",
-    "ip": device_ip,
+    "ip": ip,
     "username": username,
     "password": password,
-}
-
-
-def gigabit_status():
-    ans = ""
+    }
     with ConnectHandler(**device_params) as ssh:
         up = 0
         down = 0

@@ -1,15 +1,19 @@
 from ncclient import manager
 import xmltodict
 
-m = manager.connect(
-    host="10.0.15.63",
+
+def netconf_edit_config(ip, netconf_config):
+    m = manager.connect(
+    host=ip,
     port=830,
     username="admin",
     password="cisco",
     hostkey_verify=False
     )
 
-def create():
+    return  m.edit_config(target="running", config=netconf_config)
+
+def create(ip):
     netconf_config = """
     <config>
         <interfaces xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
@@ -32,7 +36,7 @@ def create():
     """
 
     try:
-        netconf_reply = netconf_edit_config(netconf_config)
+        netconf_reply = netconf_edit_config(ip, netconf_config)
         xml_data = netconf_reply.xml
         print(xml_data)
         if '<ok/>' in xml_data:
@@ -42,7 +46,7 @@ def create():
         return "Cannot create: Interface loopback 66070138"
 
 
-def delete():
+def delete(ip):
     netconf_config = """ 
     <config>
         <interfaces xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
@@ -54,7 +58,7 @@ def delete():
     """
 
     try:
-        netconf_reply = netconf_edit_config(netconf_config)
+        netconf_reply = netconf_edit_config(ip, netconf_config)
         xml_data = netconf_reply.xml
         print(xml_data)
         if '<ok/>' in xml_data:
@@ -64,7 +68,7 @@ def delete():
         return "Cannot delete: Interface loopback 66070138"
 
 
-def enable():
+def enable(ip):
     netconf_config = """
     <config>
         <interfaces xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
@@ -77,7 +81,7 @@ def enable():
     """
 
     try:
-        netconf_reply = netconf_edit_config(netconf_config)
+        netconf_reply = netconf_edit_config(ip, netconf_config)
         xml_data = netconf_reply.xml
         print(xml_data)
         if '<ok/>' in xml_data:
@@ -86,7 +90,7 @@ def enable():
         print("Error:", e)
         return "Cannot enable: Interface loopback 66070138"
 
-def disable():
+def disable(ip):
     netconf_config = """
     <config>
         <interfaces xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
@@ -99,7 +103,7 @@ def disable():
     """
 
     try:
-        netconf_reply = netconf_edit_config(netconf_config)
+        netconf_reply = netconf_edit_config(ip, netconf_config)
         xml_data = netconf_reply.xml
         print(xml_data)
         if '<ok/>' in xml_data:
@@ -108,11 +112,8 @@ def disable():
         print("Error:", e)
         return "Cannot shutdown: Interface loopback 66070138 (checked by Netconf)"
 
-def netconf_edit_config(netconf_config):
-    return  m.edit_config(target="running", config=netconf_config)
 
-
-def status():
+def status(ip):
     netconf_filter = """
     <filter>
         <interfaces-state xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
@@ -122,12 +123,25 @@ def status():
         </interfaces-state>
     </filter>
     """
+    m = manager.connect(
+    host=ip,
+    port=830,
+    username="admin",
+    password="cisco",
+    hostkey_verify=False
+    )
 
     try:
         # Use Netconf operational operation to get interfaces-state information
         netconf_reply = m.get(filter=netconf_filter)
         netconf_reply_dict = xmltodict.parse(netconf_reply.xml)
-        interface_data = netconf_reply_dict.get('rpc-reply', {}).get('data', {}).get('interfaces-state', {}).get('interface')
+        interface_data = (
+            netconf_reply_dict
+            .get('rpc-reply', {})
+            .get('data', {})
+            .get('interfaces-state', {})
+            .get('interface')
+        )
         # if there data return from netconf_reply_dict is not null, the operation-state of interface loopback is returned
         if interface_data:
             # extract admin_status and oper_status from netconf_reply_dict
@@ -141,6 +155,7 @@ def status():
             return "No Interface loopback 66070138 (checked by Netconf)"
     except Exception as e:
         print("Error:", e)
+        return "No Interface loopback 66070138 (checked by Netconf)"
 
 
 # if __name__ == "__main__":
@@ -154,7 +169,7 @@ def status():
 #     print(status())
 #     print("------------Enable-----------------------")
 #     print(enable())
-#     print("------------Status-----------------------")
-#     print(status())
+    # print("------------Status-----------------------")
+    # print(status())
 #     print("------------Delete-----------------------")
 #     print(delete())
