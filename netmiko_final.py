@@ -29,7 +29,9 @@ def gigabit_status(ip):
                     down += 1
                 elif status_int == "administratively down":
                     admin_down += 1
-            status.append(f"{interface_name} {status_int}")
+                status.append(f"{interface_name} {status_int}")
+            else:
+                pass
         interface_summary = ", ".join(status)
         summary_count = f"-> {up} up, {down} down, {admin_down} administratively down"
         ans = f"{interface_summary} {summary_count}"
