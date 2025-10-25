@@ -36,7 +36,6 @@ ROOM_ID_GET_MESSESGE = os.environ.get("ROOM_ID")
 restconf =False
 netconf = False
 motd = False
-ip_specified = False
 IP = ''
 IP_NAME =''
 
@@ -87,6 +86,8 @@ while True:
     # store the array of messages
     messages = json_data["items"]
     
+    ip_specified = False
+
     # store the text of the first message in the array
     message = messages[0]["text"]
     if not message.startswith("/66070138"):
@@ -140,9 +141,8 @@ while True:
                     func = getattr(restconf_final, command)
                     responseMessage = func(ip)
                 elif netconf:
-                    if command in ["create", "delete", "enable", "disable", "status"]:
-                        func = getattr(netconf_final, command)
-                        responseMessage = func(ip)
+                    func = getattr(netconf_final, command)
+                    responseMessage = func(ip)
             else:
                  responseMessage = "Error: No command or unknown command"
         else:

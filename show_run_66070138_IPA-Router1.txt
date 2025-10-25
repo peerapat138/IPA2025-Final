@@ -1,8 +1,8 @@
 Building configuration...
 
-Current configuration : 5869 bytes
+Current configuration : 6262 bytes
 !
-! Last configuration change at 20:02:23 UTC Fri Oct 24 2025 by admin
+! Last configuration change at 05:29:02 UTC Sat Oct 25 2025 by NETCONF
 !
 version 16.9
 service config
@@ -133,7 +133,7 @@ redundancy
 !
 interface Loopback1
  description My first NETCONF loopback
- ip address 172.0.41.1 255.255.255.0
+ no ip address
 !
 interface Loopback64070017
  description Created by 64070017
@@ -156,23 +156,24 @@ interface Loopback66070024
  description Interface for student 66070024
  ip address 172.0.24.1 255.255.255.0
 !
-interface Loopback66070046
- ip address 172.0.46.1 255.255.255.0
-!
-interface Loopback66070052
- description Loopback for student 66070052
- ip address 172.0.52.1 255.255.255.0
+interface Loopback66070041
+ ip address 172.0.41.25 255.255.255.0
 !
 interface Loopback66070055
  ip address 172.0.55.1 255.255.255.0
+!
+interface Loopback66070061
+ description Loopback interface for student 66070061
+ ip address 172.0.61.1 255.255.255.0
 !
 interface Loopback66070084
  ip address 172.0.84.1 255.255.255.0
  shutdown
 !
 interface Loopback66070107
- description Configured by RESTCONF
+ description Configured by NETCONF
  ip address 172.1.7.1 255.255.255.0
+ shutdown
 !
 interface Loopback66070118
  description Managed by IPA2024 Bot - 66070001
@@ -182,13 +183,24 @@ interface Loopback66070119
  description loopback for 66070119
  ip address 172.1.19.1 255.255.255.0
 !
-interface Loopback66070124
- description Created by NETCONF
- ip address 172.1.24.1 255.255.255.0
+interface Loopback66070138
+ description loopback 66070138 create by RESTCONF
+ ip address 172.1.38.1 255.255.255.0
+ shutdown
+!
+interface Loopback66070177
+ description NETCONF
+ ip address 172.1.77.1 255.255.255.0
+ shutdown
+!
+interface Loopback66070191
+ description Loopback interface for student 66070191 created by RESTCONF
+ ip address 172.1.91.1 255.255.255.0
 !
 interface Loopback66070200
- description My RESTCONF loopback
+ description My NETCONF loopback
  ip address 172.2.0.1 255.255.255.0
+ shutdown
 !
 interface Loopback66070216
  ip address 172.2.16.1 255.255.255.0
@@ -201,8 +213,11 @@ interface Loopback66070218
  shutdown
 !
 interface Loopback66070220
- description 66070220 Loopback interface
  ip address 172.2.20.1 255.255.255.0
+!
+interface Loopback66070221
+ description Configured by NETCONF
+ ip address 172.2.21.1 255.255.255.0
 !
 interface Loopback66070238
  ip address 172.2.38.1 255.255.255.0
@@ -219,9 +234,13 @@ interface Loopback66070247
  no ip address
  shutdown
 !
+interface Loopback66070273
+ ip address 172.2.73.1 255.255.255.0
+!
 interface Loopback66070276
- description Created by RESTCONF
+ description Created by NETCONF
  ip address 172.2.76.1 255.255.255.0
+ shutdown
 !
 interface Loopback66070315
  description Student 66070315 loopback
@@ -254,7 +273,7 @@ control-plane
 !
 !
 banner motd ^C
-Authorized users only! Managed by 66070119
+good morning naja from 6:59
 ^C
 !
 line con 0
