@@ -15,7 +15,7 @@ basicauth = ("admin", "cisco")
 
 def create(ip):
     # Router IP Address is 10.0.15.181-184
-    api_url = f"https://{ip}/restconf/data/ietf-interfaces:interfaces/interface=Loopback66070138"
+    api_url = f"https://{ip}/restconf/data/ietf-interfaces:interfaces"
 
     yangConfig = {
     "ietf-interfaces:interface": {
@@ -34,7 +34,7 @@ def create(ip):
         "ietf-ip:ipv6": {}
     }
 }
-    resp = requests.put(
+    resp = requests.post(
         api_url, 
         data=json.dumps(yangConfig), 
         auth=basicauth,
